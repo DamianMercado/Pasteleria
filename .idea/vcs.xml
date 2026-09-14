@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ms-catalogo" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ms-compra" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ms-inventario" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ms-pago" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/ms-venta" vcs="Git" />
+  </component>
+</project>
