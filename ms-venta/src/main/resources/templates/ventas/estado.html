@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cambiar Estado de Venta</title>
+</head>
+<body>
+    <nav>
+        <a th:href="@{/web/ventas}">Inicio</a> | 
+        <a th:href="@{/web/ventas/nueva}">Nueva Venta</a>
+    </nav>
+    <hr>
+    
+    <h2>Cambiar Estado de Venta</h2>
+    
+    <div>
+        <p><strong>ID Venta:</strong> <span th:text="${venta.id}"></span></p>
+        <p><strong>Cliente:</strong> <span th:text="${venta.clienteNombre}"></span></p>
+        <p><strong>Estado Actual:</strong> <span th:text="${venta.estadoVenta}"></span></p>
+    </div>
+    
+    <form th:action="@{/web/ventas/{id}/estado(id=${venta.id})}" th:object="${actualizarEstado}" method="post">
+        <div>
+            <label>Nuevo Estado:</label>
+            <select th:field="*{nuevoEstado}" required>
+                <option th:each="estado : ${T(org.melosas.pasteleria.enums.EstadoVenta).values()}" 
+                        th:value="${estado}" th:text="${estado}"></option>
+            </select>
+        </div>
+        <div>
+            <label>Motivo:</label>
+            <input type="text" th:field="*{motivo}" />
+        </div>
+        <br>
+        <button type="submit">Actualizar Estado</button>
+    </form>
+    
+    <br>
+    <a th:href="@{/web/ventas/{id}(id=${venta.id})}">Volver a detalle</a> | 
+    <a th:href="@{/web/ventas}">Volver a lista</a>
+</body>
+</html>

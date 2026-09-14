@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Nuevo Pago</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <a class="navbar-brand" href="#">🍰 ms-pago</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/web/pagos}">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/web/pagos/nuevo}">Nuevo Pago</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/web/pagos/fiados}">Fiados Pendientes</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <div th:if="${mensaje}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${mensaje}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    
+    <h2>Crear Nuevo Pago</h2>
+    <form th:action="@{/web/pagos/guardar}" th:object="${pago}" method="post" class="mt-4">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="ventaId" class="form-label">ID de Venta</label>
+                <input type="number" class="form-control" id="ventaId" th:field="*{ventaId}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('ventaId')}" th:errors="*{ventaId}"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="clienteNombre" class="form-label">Nombre del Cliente</label>
+                <input type="text" class="form-control" id="clienteNombre" th:field="*{clienteNombre}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('clienteNombre')}" th:errors="*{clienteNombre}"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="monto" class="form-label">Monto</label>
+                <input type="number" step="1" class="form-control" id="monto" th:field="*{monto}" required>
+                <span class="text-danger" th:if="${#fields.hasErrors('monto')}" th:errors="*{monto}"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="metodoPago" class="form-label">Método de Pago</label>
+                <select class="form-select" id="metodoPago" th:field="*{metodoPago}" required>
+                    <option value="" disabled selected>Seleccione método</option>
+                    <option th:each="metodo : ${metodosPago}" 
+                            th:value="${metodo}" 
+                            th:text="${metodo}"></option>
+                </select>
+                <span class="text-danger" th:if="${#fields.hasErrors('metodoPago')}" th:errors="*{metodoPago}"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 mb-3" id="fechaVencimientoDiv" style="display: none;">
+                <label for="fechaVencimiento" class="form-label">Fecha de Vencimiento</label>
+                <input type="datetime-local" class="form-control" id="fechaVencimiento" th:field="*{fechaVencimiento}">
+                <span class="text-danger" th:if="${#fields.hasErrors('fechaVencimiento')}" th:errors="*{fechaVencimiento}"></span>
+            </div>
+            <div class="col-md-12 mb-3">
+                <label for="notas" class="form-label">Notas</label>
+                <textarea class="form-control" id="notas" th:field="*{notas}" rows="3"></textarea>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Procesar Pago</button>
+        <a th:href="@{/web/pagos}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+
+<script>
+    document.getElementById('metodoPago').addEventListener('change', function() {
+        document.getElementById('fechaVencimientoDiv').style.display = this.value === 'FIADO' ? 'block' : 'none';
+    });
+    
+    // Check initial state if page is reloaded with validation errors
+    if(document.getElementById('metodoPago').value === 'FIADO') {
+        document.getElementById('fechaVencimientoDiv').style.display = 'block';
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

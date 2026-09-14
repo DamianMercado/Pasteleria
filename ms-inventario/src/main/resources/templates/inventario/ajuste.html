@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajuste de Stock</title>
+</head>
+<body>
+    <nav>
+        <a th:href="@{/web/inventario}">Inicio</a> | 
+        <a th:href="@{/web/inventario/nuevo}">Nuevo Ítem</a>
+    </nav>
+    <hr>
+    
+    <h2>Ajuste de Stock</h2>
+    <p>
+        <strong>Ítem:</strong> <span th:text="${item.nombre}"></span><br>
+        <strong>Stock Actual:</strong> <span th:text="${item.stockActual}"></span> <span th:text="${item.unidadMedida}"></span>
+    </p>
+
+    <form th:action="@{/web/inventario/{id}/ajuste(id=${item.id})}" th:object="${ajuste}" method="post">
+        
+        <div>
+            <label for="tipoMovimiento">Tipo de Movimiento:</label>
+            <select id="tipoMovimiento" th:field="*{tipoMovimiento}" required>
+                <option value="">Seleccione...</option>
+                <option th:each="tipo : ${T(org.melosas.pasteleria.enums.TipoMovimiento).values()}"
+                        th:value="${tipo}"
+                        th:text="${tipo}">
+                </option>
+            </select>
+        </div>
+        <br>
+
+        <div>
+            <label for="cantidad">Cantidad:</label>
+            <input type="number" id="cantidad" th:field="*{cantidad}" required min="1" />
+        </div>
+        <br>
+
+        <div>
+            <label for="motivo">Motivo:</label>
+            <input type="text" id="motivo" th:field="*{motivo}" required />
+        </div>
+        <br>
+
+        <div>
+            <label for="usuarioResponsable">Usuario Responsable:</label>
+            <input type="text" id="usuarioResponsable" th:field="*{usuarioResponsable}" required />
+        </div>
+        <br>
+
+        <button type="submit">Registrar Ajuste</button>
+        <a th:href="@{/web/inventario}">Cancelar</a>
+    </form>
+</body>
+</html>
