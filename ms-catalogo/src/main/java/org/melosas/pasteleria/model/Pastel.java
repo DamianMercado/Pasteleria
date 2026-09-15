@@ -3,6 +3,7 @@ package org.melosas.pasteleria.model;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "pasteles")
@@ -19,7 +20,7 @@ public class Pastel {
     @Column(nullable = false, unique = true)
     private String codigoPastel;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String nombrePastel;
 
     private String categoria;
@@ -34,7 +35,7 @@ public class Pastel {
 
     private Integer pesoPastel;
 
-    private Integer diasVencimiento;
+    private LocalDate fechaVencimiento;
 
     private Long compraId;
 }

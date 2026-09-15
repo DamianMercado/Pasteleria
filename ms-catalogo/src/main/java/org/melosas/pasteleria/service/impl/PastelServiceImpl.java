@@ -74,6 +74,9 @@ public class PastelServiceImpl implements PastelService {
         if (pastelRepository.existsByCodigoPastel(dto.getCodigoPastel())) {
             throw new BusinessException("El código del pastel ya existe: " + dto.getCodigoPastel());
         }
+        if (dto.getNombrePastel() == null || dto.getNombrePastel().trim().isEmpty()) {
+            dto.setNombrePastel(dto.getCodigoPastel());
+        }
         Pastel pastel = pastelMapper.toEntity(dto);
         pastel = pastelRepository.save(pastel);
         return pastelMapper.toResponseDTO(pastel);
@@ -89,7 +92,9 @@ public class PastelServiceImpl implements PastelService {
             pastelRepository.existsByCodigoPastel(dto.getCodigoPastel())) {
             throw new BusinessException("El código del pastel ya existe: " + dto.getCodigoPastel());
         }
-        
+        if (dto.getNombrePastel() == null || dto.getNombrePastel().trim().isEmpty()) {
+            dto.setNombrePastel(dto.getCodigoPastel());
+        }
         pastelMapper.updateEntityFromDTO(dto, pastel);
         pastel = pastelRepository.save(pastel);
         return pastelMapper.toResponseDTO(pastel);

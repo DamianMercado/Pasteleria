@@ -12,5 +12,6 @@ public interface PagoService {
     List<PagoResponseDTO> listarFiadosPendientes();
     PagoResponseDTO procesarPago(PagoRequestDTO dto);
     PagoResponseDTO marcarComoPagado(Long id);
+    PagoResponseDTO actualizarPago(Long id, PagoRequestDTO dto);
     void anularPago(Long id);
 }

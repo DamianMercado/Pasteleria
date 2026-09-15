@@ -25,4 +25,12 @@ public class DetalleCompraDTO {
     @NotNull
     @Positive
     private BigDecimal precioUnitario;
+
+    public String getCodigoPastel() {
+        return nombreProducto;
+    }
+
+    public void setCodigoPastel(String codigoPastel) {
+        this.nombreProducto = codigoPastel;
+    }
 }

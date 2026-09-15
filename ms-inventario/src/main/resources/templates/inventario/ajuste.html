@@ -2,55 +2,75 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Ajuste de Stock</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-    <nav>
-        <a th:href="@{/web/inventario}">Inicio</a> | 
-        <a th:href="@{/web/inventario/nuevo}">Nuevo Ítem</a>
-    </nav>
-    <hr>
-    
-    <h2>Ajuste de Stock</h2>
-    <p>
-        <strong>Ítem:</strong> <span th:text="${item.nombre}"></span><br>
-        <strong>Stock Actual:</strong> <span th:text="${item.stockActual}"></span> <span th:text="${item.unidadMedida}"></span>
-    </p>
+<div id="wrapper">
+    <!-- Navbar Lateral (Sidebar) -->
+    <div th:replace="~{fragments/sidebar :: sidebar(activeService='inventario', activePage='lista')}"></div>
 
-    <form th:action="@{/web/inventario/{id}/ajuste(id=${item.id})}" th:object="${ajuste}" method="post">
-        
-        <div>
-            <label for="tipoMovimiento">Tipo de Movimiento:</label>
-            <select id="tipoMovimiento" th:field="*{tipoMovimiento}" required>
-                <option value="">Seleccione...</option>
-                <option th:each="tipo : ${T(org.melosas.pasteleria.enums.TipoMovimiento).values()}"
-                        th:value="${tipo}"
-                        th:text="${tipo}">
-                </option>
-            </select>
+    <!-- Contenido Principal -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-lg-7 col-md-9">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h4 class="mb-0"><i class="bi bi-sliders me-2"></i>Ajuste de Stock</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <!-- Datos del Ítem actual -->
+                            <div class="p-3 mb-4 rounded" style="background-color: #fdfaf6; border: 1px solid #edd5c0;">
+                                <p class="mb-2"><strong>Ítem:</strong> <span class="fw-bold" th:text="${item.nombre}"></span></p>
+                                <p class="mb-0"><strong>Stock Actual:</strong> 
+                                    <span class="badge bg-primary fs-6" th:text="${item.stockActual}"></span> 
+                                    <span class="text-muted" th:text="${item.unidadMedida}"></span>
+                                </p>
+                            </div>
+
+                            <form th:action="@{/web/inventario/{id}/ajuste(id=${item.id})}" th:object="${ajuste}" method="post">
+                                <div class="mb-3">
+                                    <label for="tipoMovimiento" class="form-label">Tipo de Movimiento:</label>
+                                    <select id="tipoMovimiento" class="form-select" th:field="*{tipoMovimiento}" required>
+                                        <option value="">Seleccione...</option>
+                                        <option th:each="tipo : ${T(org.melosas.pasteleria.enums.TipoMovimiento).values()}"
+                                                th:value="${tipo}"
+                                                th:text="${tipo}">
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="cantidad" class="form-label">Cantidad:</label>
+                                    <input type="number" class="form-control" id="cantidad" th:field="*{cantidad}" required min="1" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="motivo" class="form-label">Motivo:</label>
+                                    <input type="text" class="form-control" id="motivo" th:field="*{motivo}" required placeholder="Ej: Merma, reposición, etc." />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="usuarioResponsable" class="form-label">Usuario Responsable:</label>
+                                    <input type="text" class="form-control" id="usuarioResponsable" th:field="*{usuarioResponsable}" required placeholder="Nombre del responsable" />
+                                </div>
+
+                                <div class="mt-4 pt-3 border-top d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check-lg me-1"></i> Registrar Ajuste</button>
+                                    <a th:href="@{/web/inventario}" class="btn btn-secondary px-4"><i class="bi bi-x-circle me-1"></i> Cancelar</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <br>
-
-        <div>
-            <label for="cantidad">Cantidad:</label>
-            <input type="number" id="cantidad" th:field="*{cantidad}" required min="1" />
-        </div>
-        <br>
-
-        <div>
-            <label for="motivo">Motivo:</label>
-            <input type="text" id="motivo" th:field="*{motivo}" required />
-        </div>
-        <br>
-
-        <div>
-            <label for="usuarioResponsable">Usuario Responsable:</label>
-            <input type="text" id="usuarioResponsable" th:field="*{usuarioResponsable}" required />
-        </div>
-        <br>
-
-        <button type="submit">Registrar Ajuste</button>
-        <a th:href="@{/web/inventario}">Cancelar</a>
-    </form>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -3,8 +3,12 @@ package org.melosas.pasteleria.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
-@Table(name = "inventario_items")
+@Table(name = "inventario_items", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"codigoPastel", "compraId"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +18,7 @@ public class InventarioItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String codigoPastel;
 
     @Column(nullable = false)
@@ -27,4 +31,6 @@ public class InventarioItem {
     private Integer ventaCosto;
 
     private Long compraId;
+
+    private LocalDate fechaVencimiento;
 }

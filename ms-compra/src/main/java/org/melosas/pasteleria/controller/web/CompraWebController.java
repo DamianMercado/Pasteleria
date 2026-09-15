@@ -43,18 +43,20 @@ public class CompraWebController {
             @RequestParam(required = false) String proveedorContacto,
             @RequestParam BigDecimal costoTransporte,
             @RequestParam(required = false) String notas,
-            @RequestParam(name = "nombreProducto") String[] nombresProducto,
+            @RequestParam(name = "codigoPastel", required = false) String[] codigosPastel,
+            @RequestParam(name = "nombreProducto", required = false) String[] nombresProducto,
             @RequestParam(name = "cantidad") Integer[] cantidades,
             @RequestParam(name = "precioUnitario") BigDecimal[] preciosUnitarios,
             RedirectAttributes redirectAttributes) {
 
         try {
             List<DetalleCompraDTO> items = new ArrayList<>();
-            if (nombresProducto != null) {
-                for (int i = 0; i < nombresProducto.length; i++) {
-                    if (nombresProducto[i] != null && !nombresProducto[i].trim().isEmpty()) {
+            String[] productos = (codigosPastel != null && codigosPastel.length > 0) ? codigosPastel : nombresProducto;
+            if (productos != null) {
+                for (int i = 0; i < productos.length; i++) {
+                    if (productos[i] != null && !productos[i].trim().isEmpty()) {
                         DetalleCompraDTO detalle = DetalleCompraDTO.builder()
-                                .nombreProducto(nombresProducto[i])
+                                .nombreProducto(productos[i].trim())
                                 .cantidad(cantidades[i])
                                 .precioUnitario(preciosUnitarios[i])
                                 .build();
@@ -124,5 +126,21 @@ public class CompraWebController {
             redirectAttributes.addFlashAttribute("error", "Error al cancelar la compra: " + e.getMessage());
         }
         return "redirect:/web/compras";
+    }
+
+    @PostMapping("/{id}/eliminar")
+    public String eliminarCompraPost(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        try {
+            compraService.eliminarCompra(id);
+            redirectAttributes.addFlashAttribute("mensaje", "Compra eliminada exitosamente.");
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al eliminar la compra: " + e.getMessage());
+        }
+        return "redirect:/web/compras";
+    }
+
+    @GetMapping("/{id}/eliminar")
+    public String eliminarCompraGet(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        return eliminarCompraPost(id, redirectAttributes);
     }
 }

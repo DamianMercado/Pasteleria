@@ -37,6 +37,31 @@ spring:
           predicates:
             - Path=/api/v1/compras/**
 
+        - id: ms-catalogo-web
+          uri: lb://ms-catalogo
+          predicates:
+            - Path=/web/catalogo/**
+
+        - id: ms-inventario-web
+          uri: lb://ms-inventario
+          predicates:
+            - Path=/web/inventario/**
+
+        - id: ms-venta-web
+          uri: lb://ms-venta
+          predicates:
+            - Path=/web/ventas/**
+
+        - id: ms-pago-web
+          uri: lb://ms-pago
+          predicates:
+            - Path=/web/pagos/**
+
+        - id: ms-compra-web
+          uri: lb://ms-compra
+          predicates:
+            - Path=/web/compras/**
+
 eureka:
   client:
     service-url:

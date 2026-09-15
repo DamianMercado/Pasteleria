@@ -24,6 +24,7 @@ import java.util.Map;
 public class PagoWebController {
 
     private final PagoService pagoService;
+    private final org.melosas.pasteleria.client.VentaClient ventaClient;
 
     @GetMapping
     public String listarPagos(Model model) {
@@ -35,30 +36,76 @@ public class PagoWebController {
         return "pagos/lista";
     }
 
-    @GetMapping("/nuevo")
-    public String nuevoPago(Model model) {
-        model.addAttribute("pago", new PagoRequestDTO());
-        model.addAttribute("metodosPago", MetodoPago.values());
-        return "pagos/formulario";
+    @GetMapping("/{id}/editar")
+    public String editarPago(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            PagoResponseDTO pago = pagoService.obtenerPorId(id);
+            PagoRequestDTO dto = PagoRequestDTO.builder()
+                    .ventaId(pago.getVentaId())
+                    .clienteNombre(pago.getClienteNombre())
+                    .monto(pago.getMonto())
+                    .metodoPago(pago.getMetodoPago())
+                    .estadoPago(pago.getEstadoPago())
+                    .fechaVencimiento(pago.getFechaVencimiento())
+                    .notas(pago.getNotas())
+                    .build();
+
+            model.addAttribute("pagoId", id);
+            model.addAttribute("pago", dto);
+            model.addAttribute("pagoOriginal", pago);
+            model.addAttribute("metodosPago", MetodoPago.values());
+            model.addAttribute("estadosPago", org.melosas.pasteleria.enums.EstadoPago.values());
+
+            if (pago.getVentaId() != null) {
+                try {
+                    org.melosas.pasteleria.client.VentaClient.VentaDTO venta = ventaClient.obtenerVenta(pago.getVentaId());
+                    model.addAttribute("venta", venta);
+                } catch (Exception ex) {
+                    model.addAttribute("ventaError", "No se pudo consultar el detalle de venta en ms-venta: " + ex.getMessage());
+                }
+            }
+
+            return "pagos/formulario";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Error al obtener el pago: " + e.getMessage());
+            return "redirect:/web/pagos";
+        }
     }
 
-    @PostMapping("/guardar")
-    public String procesarPago(@Valid @ModelAttribute("pago") PagoRequestDTO pagoRequestDTO,
-                               BindingResult result,
-                               Model model,
-                               RedirectAttributes redirectAttributes) {
+    @PostMapping("/{id}/editar")
+    public String actualizarPago(@PathVariable Long id,
+                                 @Valid @ModelAttribute("pago") PagoRequestDTO pagoRequestDTO,
+                                 BindingResult result,
+                                 Model model,
+                                 RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
+            model.addAttribute("pagoId", id);
             model.addAttribute("metodosPago", MetodoPago.values());
+            model.addAttribute("estadosPago", org.melosas.pasteleria.enums.EstadoPago.values());
+            if (pagoRequestDTO.getVentaId() != null) {
+                try {
+                    org.melosas.pasteleria.client.VentaClient.VentaDTO venta = ventaClient.obtenerVenta(pagoRequestDTO.getVentaId());
+                    model.addAttribute("venta", venta);
+                } catch (Exception ignored) {}
+            }
             return "pagos/formulario";
         }
 
         try {
-            pagoService.procesarPago(pagoRequestDTO);
-            redirectAttributes.addFlashAttribute("mensaje", "Pago procesado exitosamente.");
+            pagoService.actualizarPago(id, pagoRequestDTO);
+            redirectAttributes.addFlashAttribute("mensaje", "Pago actualizado exitosamente.");
             return "redirect:/web/pagos";
         } catch (Exception e) {
-            model.addAttribute("error", "Error al procesar el pago: " + e.getMessage());
+            model.addAttribute("pagoId", id);
+            model.addAttribute("error", "Error al actualizar el pago: " + e.getMessage());
             model.addAttribute("metodosPago", MetodoPago.values());
+            model.addAttribute("estadosPago", org.melosas.pasteleria.enums.EstadoPago.values());
+            if (pagoRequestDTO.getVentaId() != null) {
+                try {
+                    org.melosas.pasteleria.client.VentaClient.VentaDTO venta = ventaClient.obtenerVenta(pagoRequestDTO.getVentaId());
+                    model.addAttribute("venta", venta);
+                } catch (Exception ignored) {}
+            }
             return "pagos/formulario";
         }
     }

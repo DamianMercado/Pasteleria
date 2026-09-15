@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -17,7 +18,6 @@ public class PastelRequestDTO {
     @NotBlank
     private String codigoPastel;
 
-    @NotBlank
     private String nombrePastel;
 
     private String categoria;
@@ -33,8 +33,7 @@ public class PastelRequestDTO {
     @Positive
     private Integer pesoPastel;
 
-    @Positive
-    private Integer diasVencimiento;
+    private LocalDate fechaVencimiento;
 
     private Long compraId;
 }

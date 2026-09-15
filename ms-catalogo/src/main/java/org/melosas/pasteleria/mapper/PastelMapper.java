@@ -5,6 +5,9 @@ import org.melosas.pasteleria.dto.PastelResponseDTO;
 import org.melosas.pasteleria.model.Pastel;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 @Component
 public class PastelMapper {
 
@@ -20,7 +23,7 @@ public class PastelMapper {
                 .precioVenta(dto.getPrecioVenta())
                 .precioCosto(dto.getPrecioPastel())
                 .pesoPastel(dto.getPesoPastel())
-                .diasVencimiento(dto.getDiasVencimiento())
+                .fechaVencimiento(dto.getFechaVencimiento())
                 .compraId(dto.getCompraId())
                 .build();
     }
@@ -29,6 +32,15 @@ public class PastelMapper {
         if (entity == null) {
             return null;
         }
+        LocalDate hoy = LocalDate.now();
+        Boolean vencido = null;
+        Long diasParaVencer = null;
+
+        if (entity.getFechaVencimiento() != null) {
+            vencido = entity.getFechaVencimiento().isBefore(hoy);
+            diasParaVencer = ChronoUnit.DAYS.between(hoy, entity.getFechaVencimiento());
+        }
+
         return PastelResponseDTO.builder()
                 .id(entity.getId())
                 .codigoPastel(entity.getCodigoPastel())
@@ -38,7 +50,9 @@ public class PastelMapper {
                 .precioVenta(entity.getPrecioVenta())
                 .precioCosto(entity.getPrecioCosto())
                 .pesoPastel(entity.getPesoPastel())
-                .diasVencimiento(entity.getDiasVencimiento())
+                .fechaVencimiento(entity.getFechaVencimiento())
+                .vencido(vencido)
+                .diasParaVencer(diasParaVencer)
                 .compraId(entity.getCompraId())
                 .stock(null)
                 .estadoStock("N/A")
@@ -56,7 +70,7 @@ public class PastelMapper {
         entity.setPrecioVenta(dto.getPrecioVenta());
         entity.setPrecioCosto(dto.getPrecioPastel());
         entity.setPesoPastel(dto.getPesoPastel());
-        entity.setDiasVencimiento(dto.getDiasVencimiento());
+        entity.setFechaVencimiento(dto.getFechaVencimiento());
         entity.setCompraId(dto.getCompraId());
     }
 }

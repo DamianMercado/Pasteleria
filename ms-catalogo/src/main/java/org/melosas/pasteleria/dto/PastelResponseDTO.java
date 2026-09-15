@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -19,7 +20,9 @@ public class PastelResponseDTO {
     private BigDecimal precioVenta;
     private BigDecimal precioCosto;
     private Integer pesoPastel;
-    private Integer diasVencimiento;
+    private LocalDate fechaVencimiento;
+    private Boolean vencido;
+    private Long diasParaVencer;
     private Long compraId;
     
     private Integer stock;

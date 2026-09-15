@@ -5,98 +5,192 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title th:text="${titulo}">Formulario</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="#">🍰 Catálogo</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/web/catalogo}">Inicio</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/web/catalogo/nuevo}">Nuevo Pastel</a>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
-<div class="container">
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
-        <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
+<div id="wrapper">
+    <!-- Navbar Lateral (Sidebar) -->
+    <div th:replace="~{fragments/sidebar :: sidebar(activeService='catalogo', activePage=${id != null ? 'lista' : 'nuevo'})}"></div>
 
-    <div class="card">
-        <div class="card-body">
-            <h5 class="card-title" th:text="${titulo}"></h5>
-            <form th:action="@{/web/catalogo/guardar}" th:object="${pastel}" method="post">
-                <input type="hidden" name="id" th:value="${id}" />
-                
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="codigoPastel" class="form-label">Código</label>
-                        <input type="text" class="form-control" id="codigoPastel" th:field="*{codigoPastel}" required />
-                        <div class="text-danger" th:if="${#fields.hasErrors('codigoPastel')}" th:errors="*{codigoPastel}"></div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="nombrePastel" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="nombrePastel" th:field="*{nombrePastel}" required />
-                        <div class="text-danger" th:if="${#fields.hasErrors('nombrePastel')}" th:errors="*{nombrePastel}"></div>
-                    </div>
-                </div>
+    <!-- Contenido Principal -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="categoria" class="form-label">Categoría</label>
-                        <input type="text" class="form-control" id="categoria" th:field="*{categoria}" />
-                        <div class="text-danger" th:if="${#fields.hasErrors('categoria')}" th:errors="*{categoria}"></div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="compraId" class="form-label">ID de Compra</label>
-                        <input type="number" class="form-control" id="compraId" th:field="*{compraId}" />
-                        <div class="text-danger" th:if="${#fields.hasErrors('compraId')}" th:errors="*{compraId}"></div>
-                    </div>
+            <!-- Formulario dentro de una Card -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h4><i class="bi bi-cake2 me-2"></i><span th:text="${titulo}">Formulario de Pastel</span></h4>
                 </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/web/catalogo/guardar}" th:object="${pastel}" method="post">
+                        <input type="hidden" name="id" th:value="${id}" />
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="compraId" class="form-label"><i class="bi bi-receipt me-1"></i> ID de Compra</label>
+                                <select class="form-select" id="compraId" th:field="*{compraId}" onchange="onCompraChange(this.value)">
+                                    <option value="">-- Seleccionar Compra --</option>
+                                    <option th:each="c : ${compras}" 
+                                            th:value="${c.id}" 
+                                            th:text="'Compra #' + ${c.id} + (${c.proveedorNombre != null} ? ' - ' + ${c.proveedorNombre} : '')"
+                                            th:selected="${c.id == pastel.compraId}">
+                                    </option>
+                                </select>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('compraId')}" th:errors="*{compraId}"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="codigoPastelSelect" class="form-label"><i class="bi bi-upc-scan me-1"></i> Código Pastel</label>
+                                <select class="form-select mb-2" id="codigoPastelSelect" onchange="onCodigoChange(this)">
+                                    <option value="">-- Seleccione una compra para listar códigos --</option>
+                                </select>
+                                <input type="text" class="form-control" id="codigoPastel" th:field="*{codigoPastel}" placeholder="Código del pastel" required />
+                                <small class="text-muted">Seleccione un código de la lista de la compra o ingréselo manualmente.</small>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('codigoPastel')}" th:errors="*{codigoPastel}"></div>
+                            </div>
+                        </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="precioPastel" class="form-label">Precio de Compra</label>
-                        <input type="number" step="1" class="form-control" id="precioPastel" th:field="*{precioPastel}" required />
-                        <div class="text-danger" th:if="${#fields.hasErrors('precioPastel')}" th:errors="*{precioPastel}"></div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="precioVenta" class="form-label">Precio de Venta</label>
-                        <input type="number" step="1" class="form-control" id="precioVenta" th:field="*{precioVenta}" required />
-                        <div class="text-danger" th:if="${#fields.hasErrors('precioVenta')}" th:errors="*{precioVenta}"></div>
-                    </div>
-                </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="precioPastel" class="form-label"><i class="bi bi-currency-dollar me-1"></i> Precio de Compra</label>
+                                <input type="number" step="any" min="0" oninput="if(this.value < 0) this.value = 0;" onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();" class="form-control" id="precioPastel" th:field="*{precioPastel}" placeholder="0.00" required />
+                                <small class="text-muted">Se llena automáticamente al seleccionar el código de compra y queda bloqueado.</small>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('precioPastel')}" th:errors="*{precioPastel}"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="precioVenta" class="form-label"><i class="bi bi-tag me-1"></i> Precio de Venta</label>
+                                <input type="number" step="any" min="0" oninput="if(this.value < 0) this.value = 0;" onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();" class="form-control" id="precioVenta" th:field="*{precioVenta}" placeholder="0.00" required />
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('precioVenta')}" th:errors="*{precioVenta}"></div>
+                            </div>
+                        </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="pesoPastel" class="form-label">Peso (g)</label>
-                        <input type="number" step="1" class="form-control" id="pesoPastel" th:field="*{pesoPastel}" />
-                        <div class="text-danger" th:if="${#fields.hasErrors('pesoPastel')}" th:errors="*{pesoPastel}"></div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="diasVencimiento" class="form-label">Días de Vencimiento</label>
-                        <input type="number" step="1" class="form-control" id="diasVencimiento" th:field="*{diasVencimiento}" />
-                        <div class="text-danger" th:if="${#fields.hasErrors('diasVencimiento')}" th:errors="*{diasVencimiento}"></div>
-                    </div>
-                </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="categoria" class="form-label"><i class="bi bi-bookmark me-1"></i> Categoría</label>
+                                <input type="text" class="form-control" id="categoria" th:field="*{categoria}" placeholder="Ej: Tradicional, Frutal, Chocolate" />
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('categoria')}" th:errors="*{categoria}"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="pesoPastel" class="form-label"><i class="bi bi-speedometer2 me-1"></i> Peso (g)</label>
+                                <input type="number" step="1" min="0" oninput="if(this.value < 0) this.value = 0;" onkeydown="if(event.key === '-' || event.key === 'e') event.preventDefault();" class="form-control" id="pesoPastel" th:field="*{pesoPastel}" placeholder="Ej: 1000" />
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('pesoPastel')}" th:errors="*{pesoPastel}"></div>
+                            </div>
+                        </div>
 
-                <div class="mt-4">
-                    <button type="submit" class="btn btn-primary">Guardar</button>
-                    <a th:href="@{/web/catalogo}" class="btn btn-secondary">Cancelar</a>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="fechaVencimiento" class="form-label"><i class="bi bi-calendar-event me-1"></i> Fecha de Vencimiento</label>
+                                <input type="date" class="form-control" id="fechaVencimiento" th:field="*{fechaVencimiento}" required />
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('fechaVencimiento')}" th:errors="*{fechaVencimiento}"></div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-3 border-top d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4"><i class="bi bi-save me-1"></i> Guardar</button>
+                            <a th:href="@{/web/catalogo}" class="btn btn-secondary px-4"><i class="bi bi-x-circle me-1"></i> Cancelar</a>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+const comprasData = /*[[${compras}]]*/ [];
+
+function onCompraChange(compraId) {
+    const selectCodigo = document.getElementById('codigoPastelSelect');
+    const inputCodigo = document.getElementById('codigoPastel');
+
+    selectCodigo.innerHTML = '';
+
+    if (!compraId) {
+        selectCodigo.innerHTML = '<option value="">-- Seleccione una compra para listar códigos --</option>';
+        return;
+    }
+
+    const defaultOpt = document.createElement('option');
+    defaultOpt.value = '';
+    defaultOpt.textContent = '-- Seleccionar Código de la Compra --';
+    selectCodigo.appendChild(defaultOpt);
+
+    const compra = Array.isArray(comprasData) ? comprasData.find(c => String(c.id) === String(compraId)) : null;
+
+    if (compra && Array.isArray(compra.items) && compra.items.length > 0) {
+        poblarOpciones(compra.items);
+    } else {
+        // Fallback vía REST controller interno
+        fetch('/web/catalogo/api/compras/' + encodeURIComponent(compraId))
+            .then(res => res.ok ? res.json() : null)
+            .then(compraApi => {
+                if (compraApi && Array.isArray(compraApi.items) && compraApi.items.length > 0) {
+                    poblarOpciones(compraApi.items);
+                } else {
+                    selectCodigo.innerHTML = '<option value="">(No hay ítems registrados en esta compra)</option>';
+                }
+            })
+            .catch(() => {
+                selectCodigo.innerHTML = '<option value="">(No se pudieron cargar los ítems)</option>';
+            });
+    }
+
+    function poblarOpciones(items) {
+        items.forEach(item => {
+            const code = item.codigo || item.codigoPastel || item.nombreProducto || '';
+            const price = item.precioUnitario != null ? item.precioUnitario : '';
+            if (code) {
+                const opt = document.createElement('option');
+                opt.value = code;
+                opt.dataset.precio = price;
+                opt.textContent = code + (price ? ' (Precio compra: $' + price + ')' : '');
+                if (inputCodigo && inputCodigo.value && inputCodigo.value.trim() === code.trim()) {
+                    opt.selected = true;
+                }
+                selectCodigo.appendChild(opt);
+            }
+        });
+    }
+}
+
+function onCodigoChange(selectElem) {
+    const selectedOption = selectElem.options[selectElem.selectedIndex];
+    if (selectedOption && selectedOption.value) {
+        const inputCodigo = document.getElementById('codigoPastel');
+        const inputPrecio = document.getElementById('precioPastel');
+        const inputVenta = document.getElementById('precioVenta');
+        
+        inputCodigo.value = selectedOption.value;
+        if (selectedOption.dataset.precio !== undefined && selectedOption.dataset.precio !== '') {
+            inputPrecio.value = selectedOption.dataset.precio;
+            inputPrecio.readOnly = true;
+            inputPrecio.style.backgroundColor = '#e9ecef';
+            inputPrecio.style.cursor = 'not-allowed';
+        }
+        if (inputVenta) {
+            inputVenta.focus();
+        }
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const compraSelect = document.getElementById('compraId');
+    if (compraSelect && compraSelect.value) {
+        onCompraChange(compraSelect.value);
+        const inputPrecio = document.getElementById('precioPastel');
+        if (inputPrecio && inputPrecio.value) {
+            inputPrecio.readOnly = true;
+            inputPrecio.style.backgroundColor = '#e9ecef';
+            inputPrecio.style.cursor = 'not-allowed';
+        }
+    }
+});
+/*]]>*/
+</script>
 </body>
 </html>

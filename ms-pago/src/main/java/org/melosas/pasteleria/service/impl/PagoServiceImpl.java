@@ -85,6 +85,43 @@ public class PagoServiceImpl implements PagoService {
 
     @Override
     @Transactional
+    public PagoResponseDTO actualizarPago(Long id, PagoRequestDTO dto) {
+        Pago pago = pagoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Pago no encontrado con id: " + id));
+
+        if (dto.getMetodoPago() == MetodoPago.FIADO && dto.getFechaVencimiento() == null) {
+            throw new BusinessException("La fecha de vencimiento es obligatoria para pagos fiados");
+        }
+
+        if (dto.getClienteNombre() != null && !dto.getClienteNombre().trim().isEmpty()) {
+            pago.setClienteNombre(dto.getClienteNombre().trim());
+        }
+        if (dto.getMonto() != null) {
+            pago.setMonto(dto.getMonto());
+        }
+        if (dto.getMetodoPago() != null) {
+            pago.setMetodoPago(dto.getMetodoPago());
+        }
+        if (dto.getEstadoPago() != null) {
+            pago.setEstadoPago(dto.getEstadoPago());
+        } else if (dto.getMetodoPago() != null) {
+            if (dto.getMetodoPago() == MetodoPago.FIADO && pago.getEstadoPago() == EstadoPago.PAGADO) {
+                pago.setEstadoPago(EstadoPago.PENDIENTE);
+            } else if (dto.getMetodoPago() != MetodoPago.FIADO && pago.getEstadoPago() == EstadoPago.PENDIENTE) {
+                pago.setEstadoPago(EstadoPago.PAGADO);
+            }
+        }
+        pago.setFechaVencimiento(dto.getFechaVencimiento());
+        if (dto.getNotas() != null) {
+            pago.setNotas(dto.getNotas());
+        }
+
+        pago = pagoRepository.save(pago);
+        return pagoMapper.toResponseDTO(pago);
+    }
+
+    @Override
+    @Transactional
     public void anularPago(Long id) {
         Pago pago = pagoRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Pago no encontrado con id: " + id));

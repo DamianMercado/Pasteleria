@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 public class InventarioItemRequestDTO {
     @NotBlank(message = "El código del pastel es requerido")
@@ -18,4 +20,6 @@ public class InventarioItemRequestDTO {
     private Integer stock;
 
     private Long compraId;
+
+    private LocalDate fechaVencimiento;
 }

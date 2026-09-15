@@ -3,52 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Actualizar Estado</title>
+    <title>Actualizar Estado de Compra</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="#">🍰 MS-Compra</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav">
-                <li class="nav-item"><a class="nav-link" th:href="@{/web/compras}">Inicio</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/web/compras/nueva}">Nueva Compra</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card mt-5">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Actualizar Estado - Compra #<span th:text="${compra.id}"></span></h4>
-                </div>
-                <div class="card-body">
-                    <p><strong>Proveedor:</strong> <span th:text="${compra.proveedorNombre}"></span></p>
-                    <p><strong>Estado Actual:</strong> 
-                        <span th:text="${compra.estadoCompra}" class="badge bg-secondary"></span>
-                    </p>
-                    
-                    <form th:action="@{/web/compras/{id}/estado(id=${compra.id})}" method="post">
-                        <div class="mb-3 mt-4">
-                            <label for="nuevoEstado" class="form-label">Nuevo Estado:</label>
-                            <select class="form-select" id="nuevoEstado" name="nuevoEstado" required>
-                                <option th:each="estado : ${estados}" 
-                                        th:value="${estado}" 
-                                        th:text="${estado}"
-                                        th:selected="${estado == compra.estadoCompra}"></option>
-                            </select>
+<div id="wrapper">
+    <!-- Navbar Lateral (Sidebar) -->
+    <div th:replace="~{fragments/sidebar :: sidebar(activeService='compras', activePage='lista')}"></div>
+
+    <!-- Contenido Principal -->
+    <div id="page-content-wrapper">
+        <div class="container-fluid">
+            <div class="row justify-content-center">
+                <div class="col-lg-6 col-md-8">
+                    <div class="card shadow-sm">
+                        <div class="card-header">
+                            <h4 class="mb-0"><i class="bi bi-arrow-repeat me-2"></i>Actualizar Estado - Compra #<span th:text="${compra.id}"></span></h4>
                         </div>
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-primary">Actualizar Estado</button>
-                            <a th:href="@{/web/compras}" class="btn btn-secondary">Cancelar</a>
+                        <div class="card-body p-4">
+                            <div class="p-3 mb-4 rounded" style="background-color: #fdfaf6; border: 1px solid #edd5c0;">
+                                <p class="mb-2"><strong>Proveedor:</strong> <span th:text="${compra.proveedorNombre}"></span></p>
+                                <p class="mb-0"><strong>Estado Actual:</strong> 
+                                    <span th:text="${compra.estadoCompra}" class="badge bg-secondary"></span>
+                                </p>
+                            </div>
+                            
+                            <form th:action="@{/web/compras/{id}/estado(id=${compra.id})}" method="post">
+                                <div class="mb-3">
+                                    <label for="nuevoEstado" class="form-label">Nuevo Estado:</label>
+                                    <select class="form-select" id="nuevoEstado" name="nuevoEstado" required>
+                                        <option th:each="estado : ${estados}" 
+                                                th:value="${estado}" 
+                                                th:text="${estado}"
+                                                th:selected="${estado == compra.estadoCompra}"></option>
+                                    </select>
+                                </div>
+                                <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary px-4"><i class="bi bi-check-circle me-1"></i> Actualizar Estado</button>
+                                        <a th:href="@{/web/compras}" class="btn btn-secondary px-4"><i class="bi bi-x-circle me-1"></i> Cancelar</a>
+                                    </div>
+                                    <a th:href="@{/web/compras/{id}/eliminar(id=${compra.id})}" 
+                                       class="btn btn-danger" 
+                                       onclick="return confirm('¿Está seguro de eliminar permanentemente esta compra? Esta acción no se puede deshacer.');">
+                                       <i class="bi bi-trash me-1"></i> Eliminar Compra
+                                    </a>
+                                </div>
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>

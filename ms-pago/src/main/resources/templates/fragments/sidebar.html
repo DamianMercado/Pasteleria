@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="sidebar(activeService, activePage)" id="sidebar-wrapper">
+    <div class="sidebar-heading text-center py-4">
+        <div class="fs-1 mb-1">🍰</div>
+        <h4 class="m-0 fw-bold" style="color: #4a3427;">Pastelería</h4>
+        <small class="text-muted fw-semibold" style="letter-spacing: 1px; font-size: 0.75rem;">SISTEMA INTEGRAL</small>
+    </div>
+
+    <div class="list-group list-group-flush my-2 px-2">
+        <!-- Section: Catálogo -->
+        <div class="sidebar-section-title">🍰 CATÁLOGO</div>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'catalogo' and activePage == 'lista'} ? ' active' : ''"
+           data-ms="catalogo" data-path="/web/catalogo" th:href="@{/web/catalogo}">
+           <i class="bi bi-cake2"></i> Listado Pasteles
+        </a>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'catalogo' and activePage == 'nuevo'} ? ' active' : ''"
+           data-ms="catalogo" data-path="/web/catalogo/nuevo" th:href="@{/web/catalogo/nuevo}">
+           <i class="bi bi-plus-circle"></i> Nuevo Pastel
+        </a>
+
+        <!-- Section: Inventario -->
+        <div class="sidebar-section-title">📦 INVENTARIO</div>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'inventario' and activePage == 'lista'} ? ' active' : ''"
+           data-ms="inventario" data-path="/web/inventario" th:href="@{/web/inventario}">
+           <i class="bi bi-boxes"></i> Stock
+        </a>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'inventario' and activePage == 'nuevo'} ? ' active' : ''"
+           data-ms="inventario" data-path="/web/inventario/nuevo" th:href="@{/web/inventario/nuevo}">
+           <i class="bi bi-plus-circle"></i> Nuevo Ítem
+        </a>
+
+        <!-- Section: Ventas -->
+        <div class="sidebar-section-title">🛍️ VENTAS</div>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'ventas' and activePage == 'lista'} ? ' active' : ''"
+           data-ms="ventas" data-path="/web/ventas" th:href="@{/web/ventas}">
+           <i class="bi bi-receipt"></i> Ventas
+        </a>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'ventas' and activePage == 'nueva'} ? ' active' : ''"
+           data-ms="ventas" data-path="/web/ventas/nueva" th:href="@{/web/ventas/nueva}">
+           <i class="bi bi-cart-plus"></i> Nueva Venta
+        </a>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'ventas' and activePage == 'diario'} ? ' active' : ''"
+           data-ms="ventas" data-path="/web/ventas/resumen/diario" th:href="@{/web/ventas/resumen/diario}">
+           <i class="bi bi-calendar-event"></i> Resumen Diario
+        </a>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'ventas' and activePage == 'mensual'} ? ' active' : ''"
+           data-ms="ventas" data-path="/web/ventas/resumen/mensual" th:href="@{/web/ventas/resumen/mensual}">
+           <i class="bi bi-calendar3"></i> Resumen Mensual
+        </a>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'ventas' and activePage == 'anual'} ? ' active' : ''"
+           data-ms="ventas" data-path="/web/ventas/resumen/anual" th:href="@{/web/ventas/resumen/anual}">
+           <i class="bi bi-calendar-range"></i> Resumen Anual
+        </a>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'ventas' and activePage == 'estadisticas'} ? ' active' : ''"
+           data-ms="ventas" data-path="/web/ventas/estadisticas" th:href="@{/web/ventas/estadisticas}">
+           <i class="bi bi-bar-chart-line"></i> Estadísticas
+        </a>
+
+        <!-- Section: Pagos -->
+        <div class="sidebar-section-title">💳 PAGOS</div>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'pagos' and activePage == 'lista'} ? ' active' : ''"
+           data-ms="pagos" data-path="/web/pagos" th:href="@{/web/pagos}">
+           <i class="bi bi-cash-stack"></i> Lista de Pagos
+        </a>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'pagos' and activePage == 'fiados'} ? ' active' : ''"
+           data-ms="pagos" data-path="/web/pagos/fiados" th:href="@{/web/pagos/fiados}">
+           <i class="bi bi-hourglass-split"></i> Fiados Pendientes
+        </a>
+
+        <!-- Section: Compras -->
+        <div class="sidebar-section-title">🛒 COMPRAS</div>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'compras' and activePage == 'lista'} ? ' active' : ''"
+           data-ms="compras" data-path="/web/compras" th:href="@{/web/compras}">
+           <i class="bi bi-bag"></i> Lista de Compras
+        </a>
+        <a class="sidebar-link ms-link" th:classappend="${activeService == 'compras' and activePage == 'nueva'} ? ' active' : ''"
+           data-ms="compras" data-path="/web/compras/nueva" th:href="@{/web/compras/nueva}">
+           <i class="bi bi-plus-square"></i> Nueva Compra
+        </a>
+    </div>
+
+    <!-- Script de navegación dinámica entre puertos de microservicios -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const portMap = {
+                'catalogo': '8081',
+                'inventario': '8082',
+                'ventas': '8083',
+                'pagos': '8084',
+                'compras': '8085'
+            };
+            const currentPort = window.location.port;
+            if (currentPort && currentPort >= '8081' && currentPort <= '8085') {
+                document.querySelectorAll('.ms-link').forEach(function(el) {
+                    const ms = el.getAttribute('data-ms');
+                    const path = el.getAttribute('data-path');
+                    if (ms && portMap[ms]) {
+                        el.href = window.location.protocol + '//' + window.location.hostname + ':' + portMap[ms] + path;
+                    }
+                });
+            }
+        });
+    </script>
+</div>
+</body>
+</html>

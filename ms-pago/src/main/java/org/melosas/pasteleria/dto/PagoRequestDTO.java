@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.melosas.pasteleria.enums.EstadoPago;
 import org.melosas.pasteleria.enums.MetodoPago;
 
 import java.math.BigDecimal;
@@ -29,6 +30,8 @@ public class PagoRequestDTO {
 
     @NotNull(message = "El método de pago es obligatorio")
     private MetodoPago metodoPago;
+
+    private EstadoPago estadoPago;
 
     private LocalDateTime fechaVencimiento;
 

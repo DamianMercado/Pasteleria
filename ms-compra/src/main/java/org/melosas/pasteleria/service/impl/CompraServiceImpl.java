@@ -62,6 +62,13 @@ public class CompraServiceImpl implements CompraService {
         compra.setEstadoCompra(EstadoCompra.CANCELADA);
         compraRepository.save(compra);
     }
+
+    @Override
+    @Transactional
+    public void eliminarCompra(Long id) {
+        Compra compra = getCompraById(id);
+        compraRepository.delete(compra);
+    }
     
     private Compra getCompraById(Long id) {
         return compraRepository.findById(id)

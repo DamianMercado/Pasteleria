@@ -55,6 +55,25 @@ public class VentaServiceImpl implements VentaService {
 
         if (dto.getItems() != null) {
             for (DetalleVentaDTO item : dto.getItems()) {
+                Integer stockDisp = null;
+                try {
+                    stockDisp = inventarioClient.obtenerStock(item.getCodigoPastel());
+                } catch (Exception e) {
+                    log.warn("Error al consultar stock para {}: {}", item.getCodigoPastel(), e.getMessage());
+                }
+
+                if (stockDisp != null) {
+                    if (stockDisp <= 0) {
+                        throw new BusinessException("El producto '" + item.getCodigoPastel() + "' no cuenta con stock disponible en inventario.");
+                    }
+                    if (item.getCantidad() > stockDisp) {
+                        throw new BusinessException("Stock insuficiente para el producto '" + item.getCodigoPastel() 
+                                + "'. Stock disponible: " + stockDisp + ", Solicitado: " + item.getCantidad());
+                    }
+                }
+            }
+
+            for (DetalleVentaDTO item : dto.getItems()) {
                 try {
                     if (Boolean.TRUE.equals(item.getVendidoACosto())) {
                         inventarioClient.descontarStockCosto(item.getCodigoPastel(), item.getCantidad());
@@ -62,9 +81,13 @@ public class VentaServiceImpl implements VentaService {
                         inventarioClient.descontarStock(item.getCodigoPastel(), item.getCantidad());
                     }
                 } catch (BusinessException e) {
-                    throw e; // propagate
+                    throw e;
+                } catch (feign.FeignException e) {
+                    log.error("Error al descontar stock en ms-inventario para {}: {}", item.getCodigoPastel(), e.getMessage());
+                    throw new BusinessException("Error al descontar stock para " + item.getCodigoPastel() + ": " + e.contentUTF8());
                 } catch (Exception e) {
-                    log.warn("Error de comunicación con ms-inventario al descontar stock de {}", item.getCodigoPastel(), e);
+                    log.error("Error al descontar stock de {}", item.getCodigoPastel(), e);
+                    throw new BusinessException("Error al descontar stock de " + item.getCodigoPastel() + ": " + e.getMessage());
                 }
             }
         }
